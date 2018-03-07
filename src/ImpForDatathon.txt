@@ -1,0 +1,109 @@
+
+Kafka - DST
+kafka-topics --list --zookeeper localhost:2181
+
+kafka-topics --create --zookeeper localhost:2181 --replication-factor 3 --partitions 1 --topic MDataGeneratorTopic
+
+kafka-console-consumer --zookeeper localhost:2181 --topic MDataGeneratorTopic --from-beginning
+
+scp devlhydd03:/dst/home/dt212608/dataSimConfig.json devlhydd03:/dst/home/dt212608/DataGenerator.json devlhydd03:/dst/home/dt212608/json_data_generator_jar
+
+scp DataGenerator.json  dataSimConfig.json devlhydd03:/dst/home/dt212608/
+
+java -cp json-data-generator.jar 
+
+java -jar json-data-generator.jar exampleSimConfig.json
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+;
+
+LOAD DATA LOCAL INPATH '/dst/home/dt212608/Mutual funds.csv' OVERWRITE INTO TABLE datathon_table PARTITION(Product = 'Domestic Mutual Funds');
+
+DROP TABLE datathon_table
+
+java -cp xml-to-kafka-json.jar main.KafkaJsonConverter kafkaP.properties DataGenerated.csv
+
+Datathon - commands
+java -cp pepper-box-1.0.jar  com.gslab.pepper.PepperBoxLoadGenerator --schema-file <schema file absolute path> --producer-config-file <producer properties absoulte path>  
+--throughput-per-producer <throughput rate per producer> --test-duration <test duration in seconds> --num-producers <number of producers>
+
+$KAFKA_HOME/bin/zookeeper-server-start.sh $KAFKA_HOME/config/zookeeper.properties
+
+$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server.properties
+
+
+$KAFKA_HOME/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic DataGeneratorTopic
+
+
+list of topics:
+-------------------------
+$KAFKA_HOME/bin/kafka-topics.sh --list --zookeeper localhost:2181
+
+
+Send some messages:
+-------------------------
+$KAFKA_HOME/bin/kafka-console-producer --broker-list devlhydd07.dstcorp.net:9092 --topic MDataGeneratorTopic
+
+$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic topic2
+
+
+
+start the consumer:
+-------------------------
+$KAFKA_HOME/bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic topic1 --from-beginning
+
+
+$KAFKA_HOME/bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic topic2 --from-beginning
+
+java -cp /home/hadoop/Desktop/Datathon/pepper-box.jar  com.gslab.pepper.PepperBoxLoadGenerator --schema-file /home/hadoop/Desktop/Datathon/schema.json 
+--producer-config-file /home/hadoop/Desktop/Datathon/producer.properties --throughput-per-producer 1 --test-duration 3 --num-producers 1
+
+
+bootstrap.servers=localhost:9092
+zookeeper.servers=localhost:2181
+kafka.topic.name=DataGeneratorTopic
+key.serializer=org.apache.kafka.common.serialization.StringSerializer
+value.serializer=org.apache.kafka.common.serialization.StringSerializer
+acks=0
+send.buffer.bytes=131072
+receive.buffer.bytes=32768
+batch.size=16384
+linger.ms=0
+buffer.memory=33554432
+compression.type=none
+security.protocol=PLAINTEXT
+kerberos.auth.enabled=NO
+java.security.auth.login.config=
+java.security.krb5.conf=
+sasl.kerberos.service.name=kafka
+
+{
+	"messageId":{{SEQUENCE("messageId", 1, 1)}},
+	"messageBody":"{{RANDOM_ALPHA_NUMERIC("abcedefghijklmnopqrwxyzABCDEFGHIJKLMNOPQRWXYZ", 100)}}",
+	"messageCategory":"{{RANDOM_STRING("Finance", "Insurance", "Healthcare", "Shares")}}",
+	"messageStatus":"{{RANDOM_STRING("Accepted","Pending","Processing","Rejected")}}",
+	"messageTime":{{TIMESTAMP()}}
+}
+
+
+FUND_CODE 	DECIMAL(7, 0)
+MF_PRICE_DT 	DATE 
+MF_PR_SCH_TYP_CD    CHAR(1)
+MF_PRICE_HH_TM   DECIMAL(2, 0)
+MF_PRICE_MM_TM 	DECIMAL(2, 0)
+LAST_MNT_DATE_TIME 	TIMESTAMP 
+LAST_MNT_OPID 	CHAR(8) 
+MF_NAV_PR 	DECIMAL(9, 4)
+MF_PR_EQZN_FCT_RT 	DECIMAL(15, 10)
+MF_PR_ENTRY_MHD_CD 		 CHAR(1) 
+
+
+
+HIVE Part:
+CREATE DATABASE IF NOT EXISTS DatathonDB COMMENT 'DatathonDB for datathon';
+
+
+
+
+
+
